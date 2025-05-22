@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './master.css';
+import axios from 'axios';
 
 function Master() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,37 +20,31 @@ function Master() {
   const fetchPeopleData = async () => {
     setLoading(true);
     try {
+        const peopleIn = await axios.get('http://127.0.0.1:8000/getPeopleIn'); // Replace with your API endpoint
+        const peopleOut = await axios.get('http://127.0.0.1:8000/getRecentExits');
 
-        const response = await fetch('http', {
-                method: 'GET',
-                headers: {
-                    // 'Content-Type': 'application/json',
-                    // 'Authorization': `Bearer ${token}`
-                },
-            })
+        const peopleInData = peopleIn.data;
+        const peopleOutData = peopleOut.data;
+
+        console.log('API Out Response:', peopleOutData);
+        console.log('API In Response:', peopleInData);
 
         //using mockdata insted of response
+
+      const inData = peopleInData.map((person, index) => ({
+        id: index + 1,
+        name: person,
+      }));
+
+      const outData = peopleOutData.map((person, index) => ({
+        id: index + 1,
+        name: person,
+      }));
         
-      const mockData = {
-        inside: [
-          { id: 1, name: 'choco', status: 'inside', lastUpdated: '2025-05-18T10:30:00' },
-          { id: 2, name: 'ronin', status: 'inside', lastUpdated: '2025-05-18T09:45:00' },
-          { id: 3, name: 'phoenix', status: 'inside', lastUpdated: '2025-05-18T11:15:00' },
-          { id: 4, name: 'nano', status: 'inside', lastUpdated: '2025-05-18T08:20:00' },
-          { id: 5, name: 'panda', status: 'inside', lastUpdated: '2025-05-18T10:00:00' },
-        ],
-        outside: [
-          { id: 6, name: 'nawab', status: 'outside', lastUpdated: '2025-05-18T07:30:00' },
-          { id: 7, name: 'emvee', status: 'outside', lastUpdated: '2025-05-18T08:45:00' },
-          { id: 8, name: 'oggy', status: 'outside', lastUpdated: '2025-05-18T09:10:00' },
-          { id: 9, name: 'jaadu', status: 'outside', lastUpdated: '2025-05-18T11:30:00' },
-          { id: 10, name: 'jhaplu', status: 'outside', lastUpdated: '2025-05-18T10:50:00' },
-        ]
-      };
 
       // Set state with mock data
-      setPeopleInside(mockData.inside);
-      setPeopleOutside(mockData.outside);
+      setPeopleInside(inData);
+      setPeopleOutside(outData);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching people data:', error);
